@@ -1,6 +1,7 @@
 #pragma once
 #include "Person.h"
 
+class QuadTree;
 namespace user
 {
 	enum class BuffKind { Shield, AttUp, HealUp };
@@ -171,6 +172,8 @@ namespace user
 		AniState m_AniState;
 		float m_Velocity;
 
+		bool m_Grave;
+
 		vector<BuffEffect*> m_BuffEffect;
 
 	public:
@@ -191,5 +194,7 @@ namespace user
 		void SkillBlockChoiceAnimation(bool& isChoiceBlock, int choiceBlockKind, int chainCount, vector<Person*>& nakamas);
 		void NakamaBuffUpdate(vector<Person*>& nakamas);
 		BuffArea* GetJangPan() { return m_BuffArea; }
+
+		QuadTree* m_QuadTree;
 	};
 }

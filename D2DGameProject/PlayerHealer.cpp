@@ -1,8 +1,10 @@
 #include "pch.h"
+#include "QuadTree.h"
 #include "PlayerHealer.h"
 
 namespace user
 {
+
 	PlayerHealer::PlayerHealer()
 		: m_BuffArea(nullptr)
 	{
@@ -58,8 +60,8 @@ namespace user
 	void PlayerHealer::Update()
 	{
 		_GAMEMANAGER->_PlayerPosition = _Transform._Position;
-
-		MovementControl();
+		
+			MovementControl();
 
 		m_BuffArea->_Transform._Position = _Transform._Position;
 		m_BuffArea->Update();
@@ -99,12 +101,17 @@ namespace user
 			g_D2DEngine.DrawTextOut("_Image->CurrentFrameX: %d", _Image->CurrentFrameX, _Image->ShowRect.right, _Image->ShowRect.top + 180.0f, BrushColor::White);
 			g_D2DEngine.DrawTextOut("_Image->CurrentFrameY: %d", _Image->CurrentFrameY, _Image->ShowRect.right, _Image->ShowRect.top + 200.0f, BrushColor::White);
 			g_D2DEngine.DrawTextOut("_Image->AnimationSpeed: %.2f", _Image->AnimationSpeed, _Image->ShowRect.right, _Image->ShowRect.top + 220.0f, BrushColor::White);
+			g_D2DEngine.DrawTextOut("m_Grave: %d", static_cast<int>(m_Grave), _Image->ShowRect.right, _Image->ShowRect.top + 240.0f, BrushColor::White);
 		}
 #endif
 	}
 
 	void PlayerHealer::MovementControl()
 	{
+		if (m_QuadTree->CollisionCheck(_RectCollider) != nullptr)m_Grave = true;
+		else m_Grave = false;
+
+
 		if (m_AniState >= AniState::LeftBaseSkill && m_AniState < AniState::Size) return;
 
 		if (_KEYMANAGER->KeyPress(VK_LEFT))
@@ -170,6 +177,7 @@ namespace user
 
 		if (_CAMERAMANAGER->_MoveMax.y < _Transform._Position.y)
 			_Transform._Position.y = _CAMERAMANAGER->_MoveMax.y;
+
 
 	}
 
@@ -274,7 +282,7 @@ namespace user
 		if (!m_BuffArea->_IsActive) return;
 
 		for (UINT i = 1; i < nakamas.size(); i++)
-		{			
+		{
 			// 각 동료들의 이펙트 좌표 갱신시키기
 			m_BuffEffect[i - 1]->_Transform._Position = nakamas[i]->_Transform._Position;
 
@@ -289,10 +297,10 @@ namespace user
 
 			// 장판과 거리가 가까우면 버프 활성화
 			if (g_D2DEngine.Distance(nakamas[i]->_Transform._Position, _Transform._Position) <= m_BuffArea->_Transform._Radius)
-			{				
+			{
 				// 동료들의 버프장판 활성화
 				m_BuffEffect[i - 1]->Spawn(m_BuffArea->_ChainCount, m_BuffArea->_BuffAreaKind, m_BuffArea->_PlayTime);
-				
+
 				// 버프별 능력치 부여
 				switch (m_BuffArea->_BuffAreaKind)
 				{
